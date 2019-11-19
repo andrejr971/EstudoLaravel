@@ -20,7 +20,7 @@ class CreateProdutosTable extends Migration
             $table->float('preco');
 
             //chave estrangeira
-            $table->integer('categoria_id')->unsigned();
+            $table->unsignedBigInteger('categoria_id');
             $table->foreign('categoria_id')->references('id')->on('categorias');
 
             $table->timestamps();

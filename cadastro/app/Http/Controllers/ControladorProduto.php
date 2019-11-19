@@ -13,14 +13,20 @@ class ControladorProduto extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function indexView()
     {
-        $produto = new Produto();
         $produtos = Produto::all();
         $cats = Categoria::all();
 
         return view('produtos', compact('produtos', 'cats'));
     }
+
+    public function index()
+    {
+        $produtos = Produto::all();
+        return $produtos->toJson();
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -48,7 +54,7 @@ class ControladorProduto extends Controller
         $produto->categoria_id = $request->input('categorias');
         $produto->save();
 
-        return redirect('produtos');
+        return json_encode($produto);
 
     }
 
@@ -112,7 +118,8 @@ class ControladorProduto extends Controller
         $produto = Produto::find($id);
         if(isset($produto)) {
             $produto->delete();
+            return response('ok', 200);
         }
-        return redirect('produtos');
+        return response('Produto não encontrado', 404);
     }
 }
