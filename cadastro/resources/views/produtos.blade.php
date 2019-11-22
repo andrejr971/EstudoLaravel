@@ -72,9 +72,6 @@
 @endsection
 
 @section('javascript')
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-
-
     <script>
         $.ajaxSetup({
             headers: {
@@ -111,6 +108,19 @@
                 "</td>" +
                 "</tr>";
                 return linha;
+        }
+
+        function editar (id) {
+            $.getJSON('/api/produtos/'+id, function(data) {
+
+                $('#nomeProd').val(data.nome);
+                $('#id').val(data.id);
+                $('#preco').val(data.preco);
+                $('#qtd').val(data.estoque);
+                $('#cat').val(data.categoria_id);
+                $('#dlgProduto').modal('show');
+                
+            });
         }
         
         function remover(id) {
@@ -158,11 +168,56 @@
                     
                 $('#tableProdutos>tbody').append(linha);
             });
+
+            $('#dlgProduto').modal('hide');
+        }
+
+        function salvarProduto() {
+            prod = { 
+                id : $('#id').val(),
+                nomeProduto : $('#nomeProd').val(),
+                preco : $('#preco').val(),
+                estoque : $('#qtd').val(),
+                categorias : $('#cat').val()
+            }
+            $.ajax({
+                type: 'PUT',
+                url: '/api/produtos/' + prod.id,
+                data : prod,
+                context: this,
+                success: function(data) {
+                    prod = JSON.parse(data);
+                    linhas = $('#tableProdutos>tbody>tr');
+                    e = linhas.filter(function(i, e) {
+                        return (e.cells[0].textContent == prod.id );
+                    });
+
+                    if(e) {
+                        e[0].cells[0].textContent = prod.id;
+                        e[0].cells[1].textContent = prod.nome;
+                        e[0].cells[2].textContent = prod.preco;
+                        e[0].cells[3].textContent = prod.estoque;
+                        e[0].cells[4].textContent = prod.categoria_id;
+                    }
+
+                    alert('Produto Atualizado');
+                },
+                error: function() {
+                    console.log(error);
+                }
+            });
+
+            $('#dlgProduto').modal('hide');
         }
 
         $('#formProduto').submit(function(event) {
             event.preventDefault();
-            criarProduto();
+            if($('#id').val() != '') {
+                salvarProduto();
+            } else {
+                criarProduto();
+            }
+            
         });
 
         $(function() {
