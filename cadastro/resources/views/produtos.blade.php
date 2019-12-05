@@ -186,6 +186,7 @@
                 data : prod,
                 context: this,
                 success: function(data) {
+			//alert(prod);
                     prod = JSON.parse(data);
                     linhas = $('#tableProdutos>tbody>tr');
                     e = linhas.filter(function(i, e) {
